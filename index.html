@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#06060c">
+  <title>SUBJECT | CASE_01</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- パーティクル背景 -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- ビネット効果 -->
+  <div class="vignette"></div>
+
+  <!-- シーン遷移フラッシュ -->
+  <div id="scene-flash"></div>
+
+  <!-- メタナラティブ割り込み -->
+  <div id="meta-overlay" class="meta-overlay">
+    <div class="meta-glitch"></div>
+    <div class="meta-text" id="meta-text"></div>
+  </div>
+
+  <!-- ブートスプラッシュ（0.5秒） -->
+  <div id="boot-splash" class="boot-splash">被験体 接続中…</div>
+
+  <!-- タイトル画面 -->
+  <div id="title-screen" class="screen active">
+    <div class="title-ambient"></div>
+    <div class="title-content">
+      <div class="title-logo">
+        <div class="title-studio">HAGERUYA GAMES</div>
+        <div class="title-main">被験体</div>
+        <div class="title-sub">SUBJECT</div>
+        <div class="title-line"></div>
+        <div class="title-case" id="title-case-label">CASE_01 : THE CELLAR</div>
+      </div>
+      <div class="title-buttons">
+        <button id="btn-new-game" class="btn-primary">はじめから</button>
+        <button id="btn-continue" class="btn-secondary">
+          <span id="btn-continue-label">続きから</span>
+          <span id="btn-continue-info" class="btn-continue-info"></span>
+        </button>
+      </div>
+      <div id="case-selector" class="case-selector">
+        <button id="case-btn-1" class="case-btn active" data-case="1">CASE_01</button>
+        <button id="case-btn-2" class="case-btn locked" data-case="2">CASE_02</button>
+      </div>
+      <div id="title-clear-record" class="title-clear-record"></div>
+      <button id="btn-reset-record" class="btn-reset-record">進行データをリセット</button>
+      <div class="title-footer">
+        <button id="title-sound-toggle" class="title-sound-btn">🔊</button>
+        <div class="title-tip">画面タップで読み進める</div>
+      </div>
+    </div>
+    <!-- Boot Sequence -->
+    <div id="boot-sequence" class="boot-sequence">
+      <div class="boot-lines" id="boot-lines"></div>
+    </div>
+  </div>
+
+  <!-- チャプターカード -->
+  <div id="chapter-card" class="screen">
+    <div class="chapter-card-content">
+      <div class="chapter-card-number" id="chapter-card-number"></div>
+      <div class="chapter-card-line"></div>
+      <div class="chapter-card-title" id="chapter-card-title"></div>
+    </div>
+  </div>
+
+  <!-- ゲーム画面 -->
+  <div id="game-screen" class="screen">
+    <div id="game-header">
+      <div id="chapter-label"></div>
+      <div id="insight-indicator" class="insight-indicator"></div>
+      <div id="suspicion-indicator" class="suspicion-indicator"></div>
+      <button id="sound-toggle">🔊</button>
+    </div>
+    <div id="autosave-indicator">💾 保存しました</div>
+    <div id="text-container">
+      <div id="speaker-name"></div>
+      <div id="game-text"></div>
+      <div id="tap-indicator">▼</div>
+    </div>
+    <div id="choices-container"></div>
+    <div id="evidence-container">
+      <div id="evidence-instruction"></div>
+      <div id="evidence-selected"></div>
+      <div id="evidence-candidates"></div>
+      <div id="evidence-feedback"></div>
+    </div>
+    <div id="puzzle-container">
+      <div id="puzzle-question"></div>
+      <input type="text" id="puzzle-input" placeholder="答えを入力..." autocomplete="off">
+      <button id="puzzle-submit" class="btn-primary">回答する</button>
+      <div id="puzzle-feedback"></div>
+      <button id="puzzle-hint-btn" class="puzzle-hint-btn">💡 ヒントを見る</button>
+      <div id="puzzle-hint-area"></div>
+    </div>
+    <div id="toolbar">
+      <button id="btn-back" class="toolbar-btn toolbar-btn-back" disabled>
+        <span class="toolbar-icon">⏪</span><span>戻る</span>
+      </button>
+      <button class="toolbar-btn" data-action="backlog">
+        <span class="toolbar-icon">📜</span><span>履歴</span>
+      </button>
+      <button class="toolbar-btn" data-action="save">
+        <span class="toolbar-icon">💾</span><span>保存</span>
+      </button>
+      <button class="toolbar-btn" data-action="clues">
+        <span class="toolbar-icon">🔍</span><span>手がかり</span>
+      </button>
+      <button class="toolbar-btn" data-action="hint">
+        <span class="toolbar-icon">💡</span><span>ヒント</span>
+      </button>
+      <button class="toolbar-btn" data-action="memo">
+        <span class="toolbar-icon">📝</span><span>メモ</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- エンディング画面 -->
+  <div id="ending-screen" class="screen">
+    <div class="ending-content">
+      <div class="ending-text" id="ending-text"></div>
+      <div class="ending-banner" id="ending-banner"></div>
+      <div class="ending-subtitle" id="ending-subtitle"></div>
+      <button id="btn-restart" class="btn-primary">もう一度はじめから</button>
+      <button id="btn-to-title" class="btn-secondary">タイトルへ戻る</button>
+    </div>
+  </div>
+
+  <!-- CASE_02遷移オーバーレイ -->
+  <div id="case2-transition" class="case2-transition">
+    <div class="case2-transition-text" id="case2-transition-text"></div>
+    <div class="case2-transition-tap">▼</div>
+    <button id="case2-transition-back" class="case2-transition-back">タイトルへ戻る</button>
+  </div>
+
+  <!-- 次回作フック -->
+  <div id="sequel-hook" class="sequel-hook">
+    <div class="sequel-glitch" id="sequel-glitch"></div>
+    <div class="sequel-system" id="sequel-system">
+      <div class="sequel-system-header">SYSTEM LOG</div>
+      <div class="sequel-system-line" id="sequel-line-1"></div>
+      <div class="sequel-system-line" id="sequel-line-2"></div>
+    </div>
+    <div class="sequel-stats" id="sequel-stats">
+      <div class="sequel-stats-line" id="sequel-stats-1"></div>
+      <div class="sequel-stats-line" id="sequel-stats-2"></div>
+      <div class="sequel-stats-line" id="sequel-stats-3"></div>
+      <div class="sequel-stats-line" id="sequel-stats-4"></div>
+    </div>
+    <div class="sequel-diagnosis" id="sequel-diagnosis">
+      <div class="sequel-diagnosis-type" id="sequel-diagnosis-type"></div>
+      <div class="sequel-diagnosis-desc" id="sequel-diagnosis-desc"></div>
+    </div>
+    <div class="sequel-narrative" id="sequel-narrative"></div>
+    <div class="sequel-title-block" id="sequel-title-block">
+      <div class="sequel-case" id="sequel-case">CASE_02</div>
+      <div class="sequel-title-line"></div>
+      <div class="sequel-subtitle" id="sequel-subtitle">THE SECOND INCIDENT</div>
+      <div class="sequel-coming" id="sequel-coming">COMING SOON</div>
+    </div>
+  </div>
+
+  <!-- #041 警告オーバーレイ -->
+  <div id="warning-041-overlay" class="warning-041-overlay">
+    <div class="warning-041-glitch"></div>
+    <div class="warning-041-lines" id="warning-041-lines"></div>
+  </div>
+
+  <!-- SUBJECT SYSTEM 観察ログ -->
+  <div id="observation-log" class="observation-log"></div>
+
+  <!-- 通知 -->
+  <div id="notification" class="notification">
+    <span id="notification-text"></span>
+  </div>
+
+  <!-- セーブ/ロードモーダル -->
+  <div id="modal-save" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>セーブ / ロード</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="save-slots"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 手がかりモーダル -->
+  <div id="modal-clues" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>手がかり帳</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="clues-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ヒントモーダル -->
+  <div id="modal-hint" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>ヒント</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="hint-content"></div>
+        <button id="btn-next-hint" class="btn-secondary">次のヒントを見る</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- メモモーダル -->
+  <div id="modal-memo" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>メモ帳</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <textarea id="memo-textarea" placeholder="気になったことをメモしておこう..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- バックログモーダル -->
+  <div id="modal-backlog" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>テキスト履歴</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="backlog-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 名前入力ダイアログ -->
+  <div id="name-dialog" class="confirm-dialog">
+    <div class="confirm-overlay"></div>
+    <div class="confirm-box">
+      <div class="confirm-text">あなたの名前を入力してください</div>
+      <input type="text" id="name-input" placeholder="名前" autocomplete="off" maxlength="10">
+      <div class="confirm-actions">
+        <button id="name-submit" class="btn-primary confirm-btn">決定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 確認ダイアログ -->
+  <div id="confirm-dialog" class="confirm-dialog">
+    <div class="confirm-overlay"></div>
+    <div class="confirm-box">
+      <div class="confirm-text" id="confirm-text"></div>
+      <div class="confirm-actions">
+        <button id="confirm-yes" class="btn-primary confirm-btn">はい</button>
+        <button id="confirm-no" class="btn-secondary confirm-btn">いいえ</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/audio.js"></script>
+  <script src="js/story.js"></script>
+  <script src="js/story_c2.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
