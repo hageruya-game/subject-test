@@ -43,9 +43,9 @@ const STORY = {
         "誰もいないはずの部屋で、自分の名前を呼ぶ声がした。"
       ],
       choices: [
-        { text: "振り返る。確かめないと気が済まない。",   next: "q1_a", choiceId: "m_q1" },
-        { text: "無視する。関わらない方がいいと感じる。", next: "q1_b", choiceId: "m_q1" },
-        { text: "その場を離れる。直感的に避ける。",       next: "q1_c", choiceId: "m_q1" }
+        { text: "振り返る。",       next: "q1_a", choiceId: "m_q1" },
+        { text: "無視する。",       next: "q1_b", choiceId: "m_q1" },
+        { text: "その場を離れる。", next: "q1_c", choiceId: "m_q1" }
       ]
     },
     q1_a: { chapter: 1, text: [], next: "q2" },
@@ -60,9 +60,9 @@ const STORY = {
         "突然の雨。軒先に一人。自分は傘を持っている。"
       ],
       choices: [
-        { text: "傘を差し出す。自分は濡れる。",     next: "q2_a", choiceId: "m_q2" },
-        { text: "何もせず、その場にいる。",         next: "q2_b", choiceId: "m_q2" },
-        { text: "何も言わず離れる。",               next: "q2_c", choiceId: "m_q2" }
+        { text: "傘を差し出す。",     next: "q2_a", choiceId: "m_q2" },
+        { text: "何もせず、いる。",   next: "q2_b", choiceId: "m_q2" },
+        { text: "何も言わず離れる。", next: "q2_c", choiceId: "m_q2" }
       ]
     },
     q2_a: { chapter: 1, text: [], next: "q3" },
@@ -77,9 +77,9 @@ const STORY = {
         "誰かが間違っている。でも場は穏やかだ。"
       ],
       choices: [
-        { text: "指摘する。空気は壊れる。",               next: "q3_a", choiceId: "m_q3" },
-        { text: "何も言わない。間違いは残る。",           next: "q3_b", choiceId: "m_q3" },
-        { text: "話題を変える。本質から目を逸らす。",     next: "q3_c", choiceId: "m_q3" }
+        { text: "指摘する。",     next: "q3_a", choiceId: "m_q3" },
+        { text: "何も言わない。", next: "q3_b", choiceId: "m_q3" },
+        { text: "話題を変える。", next: "q3_c", choiceId: "m_q3" }
       ]
     },
     q3_a: { chapter: 1, text: [], next: "interlude_1" },
@@ -105,9 +105,9 @@ const STORY = {
         "自分の評価が、事実と違う形で広まっている。"
       ],
       choices: [
-        { text: "訂正する。関係が崩れるかもしれない。",   next: "q4_a", choiceId: "m_q4" },
-        { text: "受け入れる。誤解は残る。",               next: "q4_b", choiceId: "m_q4" },
-        { text: "距離を取る。何も変わらない。",           next: "q4_c", choiceId: "m_q4" }
+        { text: "訂正する。",   next: "q4_a", choiceId: "m_q4" },
+        { text: "受け入れる。", next: "q4_b", choiceId: "m_q4" },
+        { text: "距離を取る。", next: "q4_c", choiceId: "m_q4" }
       ]
     },
     q4_a: { chapter: 1, text: [], next: "interlude_2" },
@@ -129,12 +129,13 @@ const STORY = {
     q5: {
       chapter: 1,
       text: [
-        "守っているものを一つ手放せば、すべてが楽になる。"
+        "守っているものを一つ手放せば、\nすべてが楽になる。",
+        "それでも、手放さない理由がある。"
       ],
       choices: [
-        { text: "手放す。何かが壊れる。",                 next: "q5_a", choiceId: "m_q5" },
-        { text: "手放さない。今のまま続く。",             next: "q5_b", choiceId: "m_q5" },
-        { text: "考えない。答えを先延ばしにする。",       next: "q5_c", choiceId: "m_q5" }
+        { text: "手放す。",       next: "q5_a", choiceId: "m_q5" },
+        { text: "手放さない。",   next: "q5_b", choiceId: "m_q5" },
+        { text: "目を逸らす。",   next: "q5_c", choiceId: "m_q5" }
       ]
     },
     q5_a: { chapter: 1, text: [], next: "result_intro" },
