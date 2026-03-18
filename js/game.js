@@ -1368,9 +1368,9 @@
     }
     els.titleClearRecord.innerHTML = html;
 
-    // Update case label
+    // Update case label (skip for MIRROR)
     var caseLabel = $("title-case-label");
-    if (caseLabel) {
+    if (caseLabel && activeStory.suspects && activeStory.suspects.length > 0) {
       caseLabel.textContent = currentCase === 2
         ? "CASE_02 : THE EXPERIMENT"
         : "CASE_01 : THE CELLAR";
@@ -1915,6 +1915,131 @@
     return maxType;
   }
 
+  /* ---------- MIRROR: Score Map & Templates ---------- */
+
+  var MIRROR_SCORES = {
+    // Q1: 荷物
+    q1_a: { j: "INT", g: "FRM" },
+    q1_b: { j: "OBS", g: "SAF" },
+    q1_c: { j: "THK", g: "ORD" },
+    // Q2: 雨宿り
+    q2_a: { d: "APP", g: "REL" },
+    q2_b: { d: "BND", g: "SAF" },
+    q2_c: { d: "LED", g: "ORD" },
+    // Q3: 手帳
+    q3_a: { j: "THK", d: "BND", g: "SAF" },
+    q3_b: { j: "OBS", g: "PRD" },
+    q3_c: { j: "INT", d: "APP", g: "REL" },
+    // Q4: 忠告
+    q4_a: { j: "INT", d: "LED", g: "ORD" },
+    q4_b: { j: "THK", d: "BND", g: "FRM" },
+    q4_c: { j: "OBS", d: "APP", g: "REL" },
+    // Q5: 沈黙
+    q5_a: { j: "INT", d: "LED", g: "FRM" },
+    q5_b: { j: "OBS", d: "APP", g: "REL" },
+    q5_c: { j: "THK", g: "ORD" },
+    // Q6: 手紙
+    q6_a: { j: "OBS", g: "PRD" },
+    q6_b: { j: "INT", g: "FRM" },
+    q6_c: { j: "THK", g: "ORD" },
+    // Q7: 約束
+    q7_a: { j: "THK", d: "BND", g: "ORD" },
+    q7_b: { j: "OBS", d: "APP", g: "REL" },
+    q7_c: { j: "INT", d: "LED", g: "SAF" },
+    // Q8: 鏡
+    q8_a: { j: "OBS", g: "PRD" },
+    q8_b: { j: "THK", g: "SAF" },
+    q8_c: { j: "INT", g: "FRM" }
+  };
+
+  var MIRROR_TEMPLATES = {
+    judgment: {
+      INT: "理由より先に、体が動いている。\n正しかったかどうかは、後で考える。──大抵は、合っている。\nただ、戻れない選択をしていることがある。",
+      OBS: "まず見る。判断は、そのあとだ。\n見落とさないことが、自分を守る方法だと知っている。\nただ、見ているうちに、選べる時間が過ぎていることがある。",
+      THK: "答えが出るまで、動かない。\n衝動で選んだことを、後悔した経験があるのかもしれない。\nただ、考え終わった頃には、誰もそこにいないことがある。"
+    },
+    distance: {
+      APP: "人との距離を詰めることを恐れない。\nそれが誰かを救うこともある。\n──ただ、近づきすぎて自分が削れていることに気づかない時がある。",
+      BND: "人との間に、適切な線を引ける。\n踏み込まないことで守れるものがあると知っている。\n──ただ、その線の内側に誰もいないことがある。",
+      LED: "先に動いて、道を作る側にいる。\nそうすることで周りが安心すると知っている。\n──ただ、自分が迷った時に立ち止まれない。"
+    },
+    guard: {
+      SAF: "反応の奥に、繰り返し現れたもの。\n──安全だ。\n壊れないこと。傷つかないこと。もう一度立てること。\nそのために、選ばなかったものが、残っている。",
+      PRD: "反応の奥に、繰り返し現れたもの。\n──自尊心だ。\n自分が自分であるための、最後の砦。\n誰にも踏ませない場所がある。それで守れている。\n同時に、残らなかったものがある。",
+      REL: "反応の奥に、繰り返し現れたもの。\n──誰かとの関係だ。\nつながりが切れることへの、静かな恐れ。\nどこまでが自分か、わからなくなっている。",
+      FRM: "反応の奥に、繰り返し現れたもの。\n──自由だ。\n何にも縛られないこと。自分の意思で選べること。\nその代わりに、残らなかったものがある。",
+      ORD: "反応の奥に、繰り返し現れたもの。\n──秩序だ。\n正しさ、筋、約束。世界が崩れないための支え。\nその正しさに、自分を合わせている。"
+    },
+    copy: "その反応が、あなたの輪郭だ。",
+    selfMatch: "あなたが最後に選んだ言葉と、鏡が映したものは重なっている。\n自分のことを、よく見ている人だ。",
+    selfGap: {
+      q9_a: "あなたは最後に「自分」を選んだ。\nだが鏡が映したのは、少し違うものだった。\n──守っているものは、自覚の外にあることが多い。",
+      q9_b: "あなたは最後に「誰かとの距離」を選んだ。\nだが鏡が映したのは、少し違うものだった。\n──守っているものは、自覚の外にあることが多い。",
+      q9_c: "あなたは最後に「筋を通すこと」を選んだ。\nだが鏡が映したのは、少し違うものだった。\n──守っているものは、自覚の外にあることが多い。"
+    }
+  };
+
+  // selfImage → guard 軸の対応（一致判定用）
+  var SELF_IMAGE_GUARD_MAP = {
+    q9_a: ["PRD", "FRM", "SAF"],   // 自分であること
+    q9_b: ["REL"],                  // 誰かとの距離
+    q9_c: ["ORD"]                   // 筋を通すこと
+  };
+
+  // 同点時の優先順位（配列の先頭が優先）
+  var MIRROR_PRIORITY = {
+    judgment: ["OBS", "THK", "INT"],
+    distance: ["BND", "LED", "APP"],
+    guard:    ["SAF", "REL", "PRD", "ORD", "FRM"]
+  };
+
+  function mirrorMaxKey(obj, priority) {
+    var max = -1;
+    var result = priority[0];
+    for (var i = 0; i < priority.length; i++) {
+      if (obj[priority[i]] > max) {
+        max = obj[priority[i]];
+        result = priority[i];
+      }
+    }
+    return result;
+  }
+
+  function calcMirrorResult() {
+    var scores = {
+      judgment: { INT: 0, OBS: 0, THK: 0 },
+      distance: { APP: 0, BND: 0, LED: 0 },
+      guard:    { SAF: 0, PRD: 0, REL: 0, FRM: 0, ORD: 0 }
+    };
+
+    // m_q1〜m_q8 を集計（m_q9 は除外）
+    for (var i = 1; i <= 8; i++) {
+      var chosen = state.choices["m_q" + i];
+      var entry = MIRROR_SCORES[chosen];
+      if (!entry) continue;
+      if (entry.j) scores.judgment[entry.j]++;
+      if (entry.d) scores.distance[entry.d]++;
+      if (entry.g) scores.guard[entry.g]++;
+    }
+
+    return {
+      judgment:  mirrorMaxKey(scores.judgment, MIRROR_PRIORITY.judgment),
+      distance:  mirrorMaxKey(scores.distance, MIRROR_PRIORITY.distance),
+      guard:     mirrorMaxKey(scores.guard, MIRROR_PRIORITY.guard),
+      selfImage: state.choices["m_q9"] || "q9_a",
+      scores:    scores
+    };
+  }
+
+  function getMirrorGapText(result) {
+    var map = SELF_IMAGE_GUARD_MAP[result.selfImage];
+    if (!map) return "";
+    if (map.indexOf(result.guard) !== -1) {
+      return MIRROR_TEMPLATES.selfMatch;
+    }
+    return MIRROR_TEMPLATES.selfGap[result.selfImage] || "";
+  }
+
   /* ---------- Ending ---------- */
   var sequelTimers = [];
 
@@ -2012,6 +2137,20 @@
       } else {
         els.endingBanner.textContent = "";
       }
+    } else if (endingType === "mirror") {
+      // MIRROR エンディング
+      var mirrorResult = calcMirrorResult();
+      var tmpl = MIRROR_TEMPLATES;
+      var resultLines = [
+        tmpl.judgment[mirrorResult.judgment],
+        tmpl.distance[mirrorResult.distance],
+        tmpl.guard[mirrorResult.guard]
+      ];
+      var gapText = getMirrorGapText(mirrorResult);
+      if (gapText) resultLines.push(gapText);
+      els.endingText.textContent = resultLines.join("\n\n");
+      els.endingBanner.textContent = mirrorResult.judgment + " / " + mirrorResult.distance + " / " + mirrorResult.guard;
+      if (els.endingSubtitle) els.endingSubtitle.textContent = tmpl.copy;
     } else {
       // CASE_01 エンディングテキスト（既存）
       if (endingType === "true") {
@@ -2054,6 +2193,7 @@
   }
 
   function startSequelSequence(endingType) {
+    if (endingType === "mirror") return;
     var hook = $("sequel-hook");
     if (!hook) return;
 

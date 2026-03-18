@@ -2173,6 +2173,22 @@ button.evidence-card:disabled {
   100% { opacity: 1; }
 }
 
+/* ===== MIRROR: 旧作UI非表示 ===== */
+#case-selector,
+#insight-indicator,
+#suspicion-indicator,
+#case2-transition,
+#sequel-hook,
+#warning-041-overlay,
+#observation-log {
+  display: none !important;
+}
+.toolbar-btn[data-action="clues"],
+.toolbar-btn[data-action="hint"],
+.toolbar-btn[data-action="memo"] {
+  display: none !important;
+}
+
 /* ===== Landscape compact ===== */
 @media (orientation: landscape) and (max-height: 500px) {
   #toolbar { padding: 0.25rem 0.4rem; }
