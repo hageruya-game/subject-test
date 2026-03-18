@@ -64,6 +64,10 @@
   var currentCase = 1;
   var justClearedCase1 = false; // CASE_01初クリア直後フラグ
 
+  function isMirror() {
+    return !activeStory.suspects || activeStory.suspects.length === 0;
+  }
+
   function switchToCase(caseNum) {
     if (caseNum === 2 && typeof STORY_C2 !== "undefined") {
       activeStory = STORY_C2;
@@ -74,7 +78,7 @@
       activeStory = STORY;
       casePrefix = "hageruya_";
       currentCase = 1;
-      document.title = "SUBJECT | CASE_01";
+      document.title = isMirror() ? "SUBJECT: MIRROR" : "SUBJECT | CASE_01";
     }
   }
 
@@ -330,12 +334,13 @@
         AudioEngine.startBGM("title");
       } else if (screens.game.classList.contains("active")) {
         var scene = activeStory.scenes[state.currentScene];
-        if (scene) AudioEngine.startBGM(getBGMForChapter(scene.chapter));
+        if (scene) { var bgm = getBGMForChapter(scene.chapter); if (bgm) AudioEngine.startBGM(bgm); }
       }
     }
   }
 
   function getBGMForChapter(chapterId) {
+    if (isMirror() && chapterId <= 1) return null;
     if (chapterId <= 1) return "dark";
     return "tension";
   }
@@ -352,7 +357,7 @@
     content.style.display = "";
     showScreen("chapter");
     AudioEngine.playSFX("chapter");
-    AudioEngine.playBGM(getBGMForChapter(chapterIndex));
+    var chBgm = getBGMForChapter(chapterIndex); if (chBgm) AudioEngine.playBGM(chBgm);
     setTimeout(function () {
       showScreen("game");
       callback();
@@ -681,7 +686,8 @@
     els.chapterLabel.textContent = chLabel ? chLabel.label + "　" + chLabel.title : "";
 
     // BGM
-    AudioEngine.playBGM(getBGMForChapter(scene.chapter));
+    var sceneBgm = getBGMForChapter(scene.chapter);
+    if (sceneBgm) AudioEngine.playBGM(sceneBgm);
 
     // Hide interactive elements
     els.choices.classList.remove("visible");
@@ -1370,7 +1376,7 @@
 
     // Update case label (skip for MIRROR)
     var caseLabel = $("title-case-label");
-    if (caseLabel && activeStory.suspects && activeStory.suspects.length > 0) {
+    if (caseLabel && !isMirror()) {
       caseLabel.textContent = currentCase === 2
         ? "CASE_02 : THE EXPERIMENT"
         : "CASE_01 : THE CELLAR";
@@ -1772,7 +1778,11 @@
     bootTimers.push(setTimeout(function () {
       boot.classList.add("active");
 
-      var lines = [
+      var lines = isMirror() ? [
+        { text: "> 接続中…", delay: 400 },
+        { text: "> MIRROR 起動", delay: 2200 },
+        { text: "> 記録を開始します…", delay: 4000 }
+      ] : [
         { text: "> 接続中…", delay: 400 },
         { text: "> ログ取得開始", delay: 2200 },
         { text: "> 被験者を特定しています…", delay: 4000 }
@@ -1801,7 +1811,7 @@
         inputWrap.className = "boot-input-wrap";
         var promptLine = document.createElement("div");
         promptLine.className = "boot-line";
-        promptLine.textContent = "> 被験者名を入力 :";
+        promptLine.textContent = isMirror() ? "> 名前を入力 :" : "> 被験者名を入力 :";
         inputWrap.appendChild(promptLine);
 
         var nameInput = document.createElement("input");
@@ -1822,7 +1832,7 @@
         setTimeout(function () { nameInput.focus(); }, 200);
 
         function onBootSubmit() {
-          var name = nameInput.value.trim() || "探偵";
+          var name = nameInput.value.trim() || (isMirror() ? "匿名" : "探偵");
           nameSubmit.removeEventListener("click", onBootSubmit);
           nameInput.removeEventListener("keydown", onBootKey);
 
@@ -1830,7 +1840,9 @@
           var confirmLine = document.createElement("div");
           confirmLine.className = "boot-line";
           linesContainer.appendChild(confirmLine);
-          var confirmText = "> 被験者 " + name + " を認証… 完了";
+          var confirmText = isMirror()
+            ? "> " + name + " を記録… 完了"
+            : "> 被験者 " + name + " を認証… 完了";
           var ci = 0;
           function typeConfirm() {
             if (ci < confirmText.length) {

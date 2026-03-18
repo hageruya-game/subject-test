@@ -83,9 +83,9 @@ const STORY = {
         "この先には用事がある。"
       ],
       choices: [
-        { text: "傘を差し出す。自分は走ればいい。",       next: "q2_a", choiceId: "m_q2" },
-        { text: "黙って隣に立ち、雨が止むのを待つ。",     next: "q2_b", choiceId: "m_q2" },
-        { text: "一緒に使いましょうと提案する。",         next: "q2_c", choiceId: "m_q2" }
+        { text: "傘を差し出す。自分は濡れて行く。",         next: "q2_a", choiceId: "m_q2" },
+        { text: "雨が弱まるまで、その場に残る。",         next: "q2_b", choiceId: "m_q2" },
+        { text: "何も言わず、自分の傘でその場を離れる。", next: "q2_c", choiceId: "m_q2" }
       ]
     },
     q2_a: { chapter: 1, text: [], next: "q3" },
