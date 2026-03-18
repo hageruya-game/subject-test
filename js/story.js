@@ -1,13 +1,13 @@
 /*
- * SUBJECT: MIRROR — ストーリーデータ（5問構成）
+ * SUBJECT: MIRROR — ストーリーデータ（5問構成 + 反応シーン）
  *
  * ■ 構成：
- *   prologue → q1 → q2 → q3 → interlude_1 → q4 → interlude_2 → q5
+ *   prologue → q1 → react_1 → q2 → q3 → react_2 → q4 → react_3 → q5
  *   → result_intro → mirror_ending
  *
- * ■ choiceId：m_q1〜m_q5
+ * ■ choiceId：m_q1〜m_q5（集計対象）
+ * ■ react_1/2/3：非集計（choiceId なし）
  * ■ 中継シーン：q{N}_a/b/c（text: [] で即座に自動遷移）
- * ■ interlude_1, interlude_2：呼吸のための中継テキスト
  */
 
 const STORY = {
@@ -48,22 +48,36 @@ const STORY = {
         { text: "その場を離れる。", next: "q1_c", choiceId: "m_q1" }
       ]
     },
-    q1_a: { chapter: 1, text: [], next: "q2" },
-    q1_b: { chapter: 1, text: [], next: "q2" },
-    q1_c: { chapter: 1, text: [], next: "q2" },
+    q1_a: { chapter: 1, text: [], next: "react_1" },
+    q1_b: { chapter: 1, text: [], next: "react_1" },
+    q1_c: { chapter: 1, text: [], next: "react_1" },
 
-    /* ==================== Q2：雨 ==================== */
+    /* ==================== react_1：観察（非集計） ==================== */
+
+    react_1: {
+      chapter: 1,
+      text: [
+        "──反応を記録。"
+      ],
+      choices: [
+        { text: "……",           next: "react_1_done" },
+        { text: "見ないでほしい。", next: "react_1_done" }
+      ]
+    },
+    react_1_done: { chapter: 1, text: [], next: "q2" },
+
+    /* ==================== Q2：隣の人 ==================== */
 
     q2: {
       chapter: 1,
       text: [
-        "突然の雨。軒先には、先に一人いた。",
-        "自分は傘を一本持っている。\n目が合ったが、相手は何も言わない。"
+        "電車の中。隣の人が、静かに泣いている。",
+        "理由はわからない。"
       ],
       choices: [
-        { text: "傘を差し出す。",     next: "q2_a", choiceId: "m_q2" },
-        { text: "何もせず、いる。",   next: "q2_b", choiceId: "m_q2" },
-        { text: "何も言わず離れる。", next: "q2_c", choiceId: "m_q2" }
+        { text: "声をかける。", next: "q2_a", choiceId: "m_q2" },
+        { text: "何もしない。", next: "q2_b", choiceId: "m_q2" },
+        { text: "席を立つ。",   next: "q2_c", choiceId: "m_q2" }
       ]
     },
     q2_a: { chapter: 1, text: [], next: "q3" },
@@ -83,20 +97,22 @@ const STORY = {
         { text: "話題を変える。", next: "q3_c", choiceId: "m_q3" }
       ]
     },
-    q3_a: { chapter: 1, text: [], next: "interlude_1" },
-    q3_b: { chapter: 1, text: [], next: "interlude_1" },
-    q3_c: { chapter: 1, text: [], next: "interlude_1" },
+    q3_a: { chapter: 1, text: [], next: "react_2" },
+    q3_b: { chapter: 1, text: [], next: "react_2" },
+    q3_c: { chapter: 1, text: [], next: "react_2" },
 
-    /* ==================== 中継1 ==================== */
+    /* ==================== react_2：偏り指摘（非集計） ==================== */
 
-    interlude_1: {
+    react_2: {
       chapter: 1,
       text: [
-        "──少し、間を置く。",
-        "考えている時間が、長くなっている。"
+        "──ここまでの反応に、偏りが出ている。"
       ],
-      next: "q4"
+      choices: [
+        { text: "続ける。", next: "react_2_done" }
+      ]
     },
+    react_2_done: { chapter: 1, text: [], next: "q4" },
 
     /* ==================== Q4：評価 ==================== */
 
@@ -111,16 +127,17 @@ const STORY = {
         { text: "距離を取る。", next: "q4_c", choiceId: "m_q4" }
       ]
     },
-    q4_a: { chapter: 1, text: [], next: "interlude_2" },
-    q4_b: { chapter: 1, text: [], next: "interlude_2" },
-    q4_c: { chapter: 1, text: [], next: "interlude_2" },
+    q4_a: { chapter: 1, text: [], next: "react_3" },
+    q4_b: { chapter: 1, text: [], next: "react_3" },
+    q4_c: { chapter: 1, text: [], next: "react_3" },
 
-    /* ==================== 中継2 ==================== */
+    /* ==================== react_3：最後の溜め（自動遷移） ==================== */
 
-    interlude_2: {
+    react_3: {
       chapter: 1,
       text: [
-        "──これが、最後の問いだ。"
+        "──最後の問いの前に。",
+        "答えは、すでに出ている。"
       ],
       next: "q5"
     },
@@ -134,9 +151,9 @@ const STORY = {
         "それでも、手放さない理由がある。"
       ],
       choices: [
-        { text: "手放す。",       next: "q5_a", choiceId: "m_q5" },
-        { text: "手放さない。",   next: "q5_b", choiceId: "m_q5" },
-        { text: "目を逸らす。",   next: "q5_c", choiceId: "m_q5" }
+        { text: "手放す。",     next: "q5_a", choiceId: "m_q5" },
+        { text: "手放さない。", next: "q5_b", choiceId: "m_q5" },
+        { text: "目を逸らす。", next: "q5_c", choiceId: "m_q5" }
       ]
     },
     q5_a: { chapter: 1, text: [], next: "result_intro" },
