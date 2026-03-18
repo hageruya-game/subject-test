@@ -78,7 +78,7 @@
       activeStory = STORY;
       casePrefix = "hageruya_";
       currentCase = 1;
-      document.title = isMirror() ? "SUBJECT: MIRROR" : "SUBJECT | CASE_01";
+      document.title = isMirror() ? "あなたとは…" : "SUBJECT | CASE_01";
     }
   }
 
@@ -1779,9 +1779,9 @@
       boot.classList.add("active");
 
       var lines = isMirror() ? [
-        { text: "> 接続中…", delay: 400 },
-        { text: "> MIRROR 起動", delay: 2200 },
-        { text: "> 記録を開始します…", delay: 4000 }
+        { text: "> …………", delay: 400 },
+        { text: "> 記録はすでに開始されています。", delay: 2200 },
+        { text: "> あなたを特定しています…", delay: 4000 }
       ] : [
         { text: "> 接続中…", delay: 400 },
         { text: "> ログ取得開始", delay: 2200 },
@@ -1811,7 +1811,7 @@
         inputWrap.className = "boot-input-wrap";
         var promptLine = document.createElement("div");
         promptLine.className = "boot-line";
-        promptLine.textContent = isMirror() ? "> 名前を入力 :" : "> 被験者名を入力 :";
+        promptLine.textContent = isMirror() ? "> あなたの名前は :" : "> 被験者名を入力 :";
         inputWrap.appendChild(promptLine);
 
         var nameInput = document.createElement("input");
@@ -1841,7 +1841,7 @@
           confirmLine.className = "boot-line";
           linesContainer.appendChild(confirmLine);
           var confirmText = isMirror()
-            ? "> " + name + " を記録… 完了"
+            ? "> " + name + " ──記録済み。"
             : "> 被験者 " + name + " を認証… 完了";
           var ci = 0;
           function typeConfirm() {
